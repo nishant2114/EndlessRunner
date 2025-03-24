@@ -44,6 +44,28 @@ public class PlayerController : MonoBehaviour
         // Jump Logic
         if (Input.GetKeyDown(KeyCode.Space) && isOnGround && !gameOver)
         {
+            Jump();
+        }
+
+        // Left and Right Movement
+        if (Input.GetKeyDown(KeyCode.RightArrow) && currentLane > 0)
+        {
+            MoveLeft(); // Moveright
+        }
+        if (Input.GetKeyDown(KeyCode.LeftArrow) && currentLane < 2)
+        {
+            MoveRight(); // Move left
+        }
+
+        // Smoothly Move to the Target Lane
+        Vector3 targetPosition = new Vector3(transform.position.x, transform.position.y, (currentLane - 1) * laneDistance);
+        transform.position = Vector3.MoveTowards(transform.position, targetPosition, sideSpeed * Time.deltaTime);
+    }
+
+    public void Jump()
+    {
+        if (isOnGround && !gameOver)
+        {
             playerRb.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
             isOnGround = false;
 
@@ -51,20 +73,22 @@ public class PlayerController : MonoBehaviour
             dirtParticle.Stop();
             playerAudio.PlayOneShot(jumpSound, 1.0f);
         }
+    }
 
-        // Left and Right Movement
-        if (Input.GetKeyDown(KeyCode.RightArrow) && currentLane > 0)
+    public void MoveLeft()
+    {
+        if (currentLane > 0 && !gameOver)
         {
-            currentLane--; // Moveright
+            currentLane--;
         }
-        if (Input.GetKeyDown(KeyCode.LeftArrow) && currentLane < 2)
-        {
-            currentLane++; // Move left
-        }
+    }
 
-        // Smoothly Move to the Target Lane
-        Vector3 targetPosition = new Vector3(transform.position.x, transform.position.y, (currentLane - 1) * laneDistance);
-        transform.position = Vector3.MoveTowards(transform.position, targetPosition, sideSpeed * Time.deltaTime);
+    public void MoveRight()
+    {
+        if (currentLane < 2 && !gameOver)
+        {
+            currentLane++;
+        }
     }
 
     private void OnCollisionEnter(Collision collision)
